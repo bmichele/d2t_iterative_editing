@@ -1,5 +1,5 @@
 # LaserTagger dependencies
-tensorflow-gpu==1.15.2
+tensorflow==1.15.2
 absl-py==0.8.1
 astor==0.8.0
 bert-tensorflow==1.0.1
