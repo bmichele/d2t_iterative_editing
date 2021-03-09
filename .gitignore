@@ -126,3 +126,13 @@ venv.bak/
 lightning_logs/
 MNIST
 .DS_Store
+
+# downloaded stuff and results (lasertagger, data, ...)
+lasertagger_tf/
+data/
+!data/webnlg/templates.json
+!data/e2e/templates.json
+!data/e2e/templates_double.json
+e2e_metrics/
+experiments/
+out/
