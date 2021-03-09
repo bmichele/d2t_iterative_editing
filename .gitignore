@@ -136,3 +136,4 @@ data/
 e2e_metrics/
 experiments/
 out/
+*.out
