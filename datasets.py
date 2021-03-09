@@ -10,7 +10,9 @@ import random
 from utils import e2e_checker
 
 from collections import defaultdict, namedtuple
-from utils import webnlg_parsing
+from utils import webnlg_parsing, statnlg_parsing
+from typing import List
+from utils.tokenizer import Tokenizer
 
 RDFTriple = namedtuple('RDFTriple', 'subj pred obj')
 logger = logging.getLogger(__name__)
@@ -488,3 +490,50 @@ class DiscoFuse(Dataset):
         """
         pass
 
+
+class StatNLG(Dataset):
+    def __init__(self):
+        super().__init__(name="statnlg")
+
+
+    def load_from_dir(self, path, splits):
+        for split in splits:
+            logger.info(f"Loading {split} split")
+            data_dir = os.path.join(path, split)
+            entry_set = statnlg_parsing.run_parser(data_dir)
+
+            for data_entry in entry_set:
+                entry = DataEntry(data_entry[0], data_entry[1])
+                self.data[split].append(entry)
+
+
+    def check_facts(self, sent: str, facts: List[List[str]], tokenizer: Tokenizer) -> bool:
+        """Checks if the sentence contains all the entities"""
+
+        def normalize(s):
+            # remove all chars except alnum, space and dot
+            return re.sub("[^0-9a-zA-Z ]+", "", s)
+
+        sent_clean = sent.lower()
+        sent_clean = normalize(sent_clean)
+
+        for entities in facts:
+            for entity in entities:
+                # entity_clean = tokenizer.tokenize(entity).lower()
+                entity_clean = normalize(entity.lower())
+
+                if entity_clean not in sent_clean:
+                    logging.debug(
+                        "Sentence '{}' does not contain entity '{}' and will be excluded".format(sent_clean, entity_clean)
+                    )
+                    return False
+
+        return True
+
+
+# # Testing
+# data_dir = "/Users/micheleb/uniData/corpus_for_michele"
+# my_split = "test"
+#
+# dataset = StatNLG()
+# dataset.load_from_dir(data_dir, [my_split])
